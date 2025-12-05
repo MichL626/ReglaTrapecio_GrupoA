@@ -1,17 +1,23 @@
+package ProyectoCalculo;
+
 import java.util.Scanner;
 
 public class ReglaTrapecio {
 
+    // metodo para ingresar la funcion a integrar
     public static double f(double x) {
-        return Math.exp(Math.pow(x, 4));
+        return Math.exp(Math.pow(x, 4)); // En esta parte se ingresa la funcion adaptada al lenguaje
     }
 
-    public static double reglaTrapecio(double a, double b, int n) {
+    // metodo para utilizar la regla del trapecio compuesto
+    public static double reglaTrapecioCompuesto(double a, double b, int n) {
+
         double h = (b - a) / n;
         System.out.println("\nh = " + h);
 
         double suma = 0;
-        System.out.println("\n--- Cálculo de los puntos ---");
+        System.out.println("\n--- Cálculo de los puntos internos ---");
+
         for (int k = 1; k < n; k++) {
             double xk = a + k * h;
             double fx = f(xk);
@@ -21,16 +27,27 @@ public class ReglaTrapecio {
 
         double resultado = h * ((f(a) + f(b)) / 2 + suma);
 
-        System.out.println("\nAplicando la fórmula:");
+        System.out.println("\nAplicando la fórmula del Trapecio Compuesto:");
         System.out.println("∫ f(x) dx ≈ h * [ (f(a)+f(b))/2 + sum f(xk) ]");
 
         return resultado;
     }
 
+    // metodo para utilizar la regla del trapecio simple
+    public static double reglaTrapecioSimple(double a, double b) {
+        System.out.println("\nAplicando Regla del Trapecio Simple...");
+        double fa = f(a);
+        double fb = f(b);
+        double resultado = (b - a) / 2.0 * (fa + fb);
+        return resultado;
+    }
+
+    // metodo error absoluto
     public static double errorAbsoluto(double aproximado, double exacto) {
         return Math.abs(aproximado - exacto);
     }
 
+    // metodo calculo de tiempo
     public static long medirTiempo(Runnable metodo) {
         long inicio = System.nanoTime();
         metodo.run();
@@ -56,7 +73,18 @@ public class ReglaTrapecio {
         double exacto = sc.nextDouble();
 
         long tiempo = medirTiempo(() -> {
-            double aprox = reglaTrapecio(a, b, n);
+
+            double aprox;
+
+            // Si n == 1 → Trapecio Simple
+            if (n == 1) {
+                aprox = reglaTrapecioSimple(a, b);
+            }
+            // Si n > 1 → Trapecio Compuesto
+            else {
+                aprox = reglaTrapecioCompuesto(a, b, n);
+            }
+
             System.out.printf("%nAproximación numérica: %.10e%n", aprox);
 
             if (exacto != 0) {
@@ -66,6 +94,7 @@ public class ReglaTrapecio {
                 System.out.println("Error absoluto: " + ea);
                 System.out.println("Error relativo: " + er);
             }
+
         });
 
         System.out.println("\nTiempo de ejecución: " + tiempo + " ms");
